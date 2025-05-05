@@ -3,11 +3,15 @@ import { Expense } from "../Model/Expense.Model.js";
 
 export const addExpense = async (req, res) => {
   try {
-    const { amount, category, date, note } = req.body;
+    const { amount, category, date, note,title } = req.body;
+    if(!amount || !category || !date || !title || !note) {
+      return res.status(400).json({ success: false, message: "Please provide amount, category and date title and note" });
+    }
     const expense = await Expense.create({
       user: req.user.id,
       amount,
       category,
+      title,
       date,
       note,
     });
@@ -47,6 +51,20 @@ export const deleteExpense = async (req, res) => {
 
     await expense.deleteOne();
     res.status(200).json({ success: true, message: "Expense deleted" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+export const getTotalExpense = async (req, res) => {
+  try {
+    // Find all expenses for the current user
+    const expenses = await Expense.find({ user: req.user.id });
+    if(!expenses) return res.status(404).json({ message: "Expense not found" });
+
+    // Calculate the total amount spent by summing all expenses
+    const totalExpense = expenses.reduce((total, expense) => total + expense.amount, 0);
+
+    res.status(200).json({ success: true, totalExpense });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

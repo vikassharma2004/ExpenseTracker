@@ -5,6 +5,7 @@ import ConnectDb from "./config/db/ConnectDb.js";
 import AuthRoutes from "./Routes/Auth.Routes.js";
 
 import IncomeRoutes from "./Routes/Income.Routes.js"
+import ExpenseRoutes from "./Routes/Expense.route.js"
 
 dotenv.config();
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true })); // For form data
 //  Route Handling
 app.use("/api/auth", AuthRoutes);
 app.use("/api/income",IncomeRoutes)
+app.use("/api/expense",ExpenseRoutes)
 
 //  Server Setup
 const server = app.listen(process.env.PORT, () => {
