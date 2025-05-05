@@ -1,9 +1,8 @@
 import express from "express";
 import { forgotPassword, getUserProfile, login, logout, refreshToken, register, resetPassword } from "../Controllers/Auth.Controller.js";
 import isAuthenticated from "../Middleware/IsAuthenticated.js";
+
 const Router=express.Router();
-
-
 
 Router.route("/login").post(login);
 Router.route("/register").post(register);
