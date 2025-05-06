@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect } from "react";
+import "./App.css";
+import { Route, Routes } from "react-router-dom";
+import Login from "./pages/auth/Login.jsx";
+import SignUp from "./pages/auth/SignUp.jsx";
+import Home from "./pages/dashboard/Home.jsx";
+import Income from "./pages/dashboard/Income.jsx";
+import Expense from "./pages/dashboard/Expense.jsx";
+import { Toaster } from "react-hot-toast";
+import { useUserAuthStore } from "./store/UserAuthStore.js";
+import Loader from "./components/Loader/Loader.jsx";
+import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const { getProfile, loading, refreshToken } = useUserAuthStore();
+  useEffect(() => {
+    getProfile();
+  }, []);
+
+  setInterval(() => {
+    refreshToken();
+  }, 5 * 60 * 1000);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Routes>
+        <Route path="/" element={<Root />} />
+        <Route path="/login" exact element={<Login />} />
+        <Route path="/signup" exact element={<SignUp />} />
+        <Route path="/forgotPassword" exact element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" exact element={<SignUp />} />
+        <Route path="/Dashboard" exact element={<Home />} />
+        <Route path="/Income" exact element={<Income />} />
+        <Route path="/expense" exact element={<Expense />} />
+      </Routes>
+      <Toaster />
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
+
+const Root = () => {
+  return <div>Root</div>;
+};
