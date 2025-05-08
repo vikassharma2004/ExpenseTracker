@@ -56,7 +56,7 @@ export const refreshAccessToken = (req, res) => {
     const accessToken = jwt.sign(
       { id: req.user.id},
       process.env.JWT_SECRET,
-      { expiresIn: "5m" }
+      { expiresIn: "10m" }
     );
 
     // Cookie options
@@ -65,7 +65,7 @@ export const refreshAccessToken = (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       
-      maxAge: 5 * 60 * 1000, // 5 minutes
+      maxAge: 10 * 60 * 1000, // 5 minutes
     };
 
     // Set the new access token cookie

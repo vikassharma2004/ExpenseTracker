@@ -5,7 +5,7 @@ import { IoMdNotifications } from "react-icons/io";
 const Navbar = ({ activemenu }) => {
   const [opensidemenu, setopensidemenu] = useState(false);
   return (
-    <div className="flex justify-between gap-5 bg-white border border-b border-gray-200/50 blackdrop-blur-[12px] py-4 px-7 sticky top-0">
+    <div className="flex z-50 justify-between gap-5 bg-white border border-b border-gray-200/50 blackdrop-blur-[12px] py-4 px-7 sticky top-0">
       <button
         className="block lg:hidden text-black"
         onClick={() => setopensidemenu(!opensidemenu)}

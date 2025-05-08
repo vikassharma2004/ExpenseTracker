@@ -13,8 +13,12 @@ const UserSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-        lowercase: true,
+        
         trim: true,
+    },
+    profileimgurl: {
+        type: String,
+        default: "https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211467.png"
     },
     password: {
         type: String,

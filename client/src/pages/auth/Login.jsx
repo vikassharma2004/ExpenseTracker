@@ -6,12 +6,13 @@ import { useUserAuthStore } from "../../store/UserAuthStore";
 import { useNavigate } from "react-router-dom";
 
 
+import { RiLoader2Line } from "react-icons/ri";
 
 const Login = () => {
   const { login, loading} = useUserAuthStore();
 
 
-
+console.log(loading)
 
  
   const [formData, setFormData] = useState({
@@ -55,30 +56,26 @@ const Login = () => {
 
 
   return (
-    <div className="relative flex min-h-screen font-[Inter]">
-      {loading && (
-        <div className="absolute inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <Loader />
-        </div>
-      )}
+    <div className="relative flex min-h-screen ">
+    
       
 
       <div className="hidden md:flex w-1/2 items-center justify-center p-4">
         <img
           src="https://cdni.iconscout.com/illustration/premium/thumb/expense-management-illustration-download-in-svg-png-gif-file-formats--business-finance-strategy-concept-pack-illustrations-3561009.png"
           alt="Finance Illustration"
-          className="max-w-md object-contain"
+          className="max-w-full object-contain"
         />
       </div>
 
-      <div className="w-full md:w-1/2 flex flex-col justify-center px-8 py-12 bg-white">
-        <div className="mb-8">
+      <div className="w-full md:w-1/2 flex flex-col justify-center px-8 py-12 bg-white ">
+        <div className="mb-8 mx-auto">
           <img src={Applogo} alt="Logo" className="h-30 max-md:h-50 max-md:m-auto" />
         </div>
 
-        <h2 className="text-3xl font-semibold text-gray-800 mb-6">Welcome Back!</h2>
+        <h2 className="text-3xl font-semibold text-gray-800 mb-6 mx-auto">Welcome Back!</h2>
 
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6 w-[60%] mx-auto" onSubmit={handleSubmit}>
           <input
             type="email"
             name="email"
@@ -100,12 +97,12 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 rounded-xl transition shadow-md cursor-pointer"
+            className="w-full bg-[#27374D] hover:bg-[#27374dec] text-white py-2 rounded-xl transition shadow-md cursor-pointer"
           >
-            Login
+           {loading?<RiLoader2Line className="animate-spin  text-3xl mx-auto" />: "login"} 
           </button>
           <div className="text-right">
-            <a href="/forgotpassword" className="text-sm text-teal-500 hover:underline">
+            <a href="/forgotpassword" className="text-sm text-[#27374D] hover:underline">
               Forgot Password?
             </a>
           </div>
@@ -113,7 +110,7 @@ const Login = () => {
 
         <div className="mt-8 text-sm text-gray-500 text-center">
           Don’t have an account?{" "}
-          <a href="/signup" className="text-teal-600 hover:underline">
+          <a href="/signup" className="text-[#27374D] hover:underline">
             Sign up
           </a>
         </div>

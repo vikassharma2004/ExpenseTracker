@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { use, useEffect } from "react";
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import Login from "./pages/auth/Login.jsx";
@@ -12,7 +12,9 @@ import Loader from "./components/Loader/Loader.jsx";
 import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
 
 const App = () => {
-  const { getProfile, loading, refreshToken } = useUserAuthStore();
+ 
+ 
+  const { getProfile, ischeckingAuth, refreshToken } = useUserAuthStore();
   useEffect(() => {
     getProfile();
   }, []);
@@ -21,10 +23,14 @@ const App = () => {
     refreshToken();
   }, 5 * 60 * 1000);
 
-  if (loading) {
-    return <Loader />;
+  if (ischeckingAuth) {
+    return (
+      <div className="fixed inset-0 bg-white/70 bg-opacity-60 flex items-center justify-center z-50">
+      <Loader /> {/* Replace this with your actual loader component or spinner */}
+    </div>
+    );
   }
-
+  
   return (
     <>
       <Routes>
@@ -34,8 +40,8 @@ const App = () => {
         <Route path="/forgotPassword" exact element={<ForgotPassword />} />
         <Route path="/reset-password/:token" exact element={<SignUp />} />
         <Route path="/Dashboard" exact element={<Home />} />
-        <Route path="/Income" exact element={<Income />} />
-        <Route path="/expense" exact element={<Expense />} />
+        <Route path="/Incomes" exact element={<Income  />} />
+        <Route path="/expenses" exact element={<Expense />} />
       </Routes>
       <Toaster />
     </>

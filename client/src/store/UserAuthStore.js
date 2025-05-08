@@ -12,7 +12,8 @@ export const useUserAuthStore = create(
   persist(
     (set, ) => ({
       user: null,
-      loading: false,
+      loading:false,
+      ischeckingAuth:false,
       isAuthenticated: false,
       error: null,
 
@@ -36,9 +37,18 @@ export const useUserAuthStore = create(
         try {
           set({ loading: true, error: null });
           const { data } = await axios.post("/auth/register", userData);
-          console.log(data.user)
+          
           set({ user: data.user, isAuthenticated: true, loading: false });
-          toast.success("Registered Successfully");
+          toast('Registration successful',
+        {
+          
+          style: {
+            borderRadius: '10px',
+            background: '#14b51f',
+            color: '#fff',
+          },
+        }
+      );
 
          
          // start token timer
@@ -49,7 +59,7 @@ export const useUserAuthStore = create(
           });
           toast.error(error.response?.data?.message || "Registration failed");
           
-          return error.response?.data?.success
+          
         }
       },
 
@@ -61,7 +71,16 @@ export const useUserAuthStore = create(
           console.log(data.user)
           set({ user: data.user, isAuthenticated: true, loading: false });
           
-          toast.success(`welcome back ${data.user.name}`);
+          toast(`welcome  ${data.user.name}`,
+            {
+          
+          style: {
+            borderRadius: '10px',
+            background: '#14b51f',
+            color: '#fff',
+          },
+        }
+          );
           
           return data;
         } catch (error) {
@@ -78,6 +97,7 @@ export const useUserAuthStore = create(
         try {
           set({ loading: true, error: null });
           await axios.post("/auth/logout");
+          toast.success("Logout Successfully");
           set({ user: null, isAuthenticated: false, loading: false });
           
         } catch (error) {
@@ -91,10 +111,10 @@ export const useUserAuthStore = create(
       // Get Profile
       getProfile: async () => {
         try {
-          set({ loading: true, error: null });
+          set({ ischeckingAuth: true, error: null });
           const { data } = await axios.get("/auth/getUserProfile");
           console.log(data.user)
-          set({ user: data.user, isAuthenticated: true, loading: false });
+          set({ user: data.user, isAuthenticated: true,ischeckingAuth:false});
           
            
         } catch (error) {
@@ -103,6 +123,7 @@ export const useUserAuthStore = create(
             isAuthenticated: false,
             error: error.response?.data?.message || "Fetch profile failed",
             loading: false,
+            ischeckingAuth:false
           });
           
         }

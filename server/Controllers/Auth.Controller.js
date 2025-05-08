@@ -1,14 +1,16 @@
 import { User } from "../Model/User.Model.js";
 import { resetPasswordTemplate } from "../utils/EmailTemplate/ResetPasswordTemplate.js";
-import { generateCookies, refreshAccessToken } from "../utils/Generatecookie.js";
+import {
+  generateCookies,
+  refreshAccessToken,
+} from "../utils/Generatecookie.js";
 import generateResetPasswordToken from "../utils/generateResetToken.js";
 import { sendEmail } from "../utils/SendEmails.js";
-
 
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body || {};
-    
+
     if (!email || !password) {
       return res
         .status(400)
@@ -98,7 +100,9 @@ export const logout = (req, res) => {
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-console.log("email", email);
+
+   
+    console.log("email", email);
     if (!email) {
       return res
         .status(400)
@@ -107,33 +111,27 @@ console.log("email", email);
 
     // check if user exists
     const user = await User.findOne({ email });
+   
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
     }
 
-    
-    
-    
     const { resetToken, hashedToken, expires } = generateResetPasswordToken();
 
     user.resetPasswordToken = hashedToken;
     user.resetPasswordExpires = expires;
 
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${hashedToken}`;
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${hashedToken}`;
     let username = user.name;
-
-   
-
 
     const resethtml = resetPasswordTemplate(username, resetLink);
 
-    sendEmail(email, "Reset Your Password", resethtml)
-    .then(() => console.log("Email sent"))
-    .catch(err => console.error("Error sending email", err));
+    await sendEmail(email, "Reset Your Password", resethtml)
+      .then(() => console.log("Email sent"))
+      .catch((err) => console.error("Error sending email", err));
     await user.save();
-    
 
     return res
       .status(200)
@@ -146,9 +144,8 @@ console.log("email", email);
 
 export const resetPassword = async (req, res) => {
   const { newPassword } = req.body;
-  
+
   const { token } = req.params;
-  
 
   if (!token || !newPassword) {
     return res
@@ -156,7 +153,6 @@ export const resetPassword = async (req, res) => {
       .json({ message: "Token and new password are required" });
   }
 
- 
   try {
     // Find user with valid reset token
     const user = await User.findOne({
@@ -165,7 +161,6 @@ export const resetPassword = async (req, res) => {
     });
 
     console.log("user", user);
-    
 
     if (!user) {
       return res
@@ -182,9 +177,7 @@ export const resetPassword = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: "Password has been reset successfully" },
-        newPassword
-      );
+      .json({ message: "Password has been reset successfully" }, newPassword);
   } catch (err) {
     console.error("Reset password error:", err.message);
     return res
@@ -215,11 +208,10 @@ export const getUserProfile = async (req, res) => {
 };
 
 export const refreshToken = async (req, res) => {
- try {
- await  refreshAccessToken(req, res);
- } catch (error) {
-  console.log("error while refresh token", error);
-  res.status(500).json({ success: false, message: "internal server error" });
- }
+  try {
+    await refreshAccessToken(req, res);
+  } catch (error) {
+    console.log("error while refresh token", error);
+    res.status(500).json({ success: false, message: "internal server error" });
   }
-
+};

@@ -9,8 +9,8 @@ Router.route("/register").post(register);
 Router.route("/logout").post(isAuthenticated,logout);
 Router.route("/getUserProfile").get(isAuthenticated,getUserProfile);
 Router.route("/reset-password/:token").put(resetPassword);
-Router.route("/forgotPassword").post(forgotPassword);
-Router.route("/refreshtoken").post(isAuthenticated,refreshToken);
+Router.route("/forgot-Password").post(forgotPassword);
+Router.route("/refreshtoken").get(isAuthenticated,refreshToken);
 
 
 
