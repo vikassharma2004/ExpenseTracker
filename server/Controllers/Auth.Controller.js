@@ -2,6 +2,7 @@ import { User } from "../Model/User.Model.js";
 import { resetPasswordTemplate } from "../utils/EmailTemplate/ResetPasswordTemplate.js";
 import { Income } from "../Model/Income.Model.js";
 import {Expense} from "../Model/Expense.Model.js"
+import { Budget } from "../Model/Budget.Model.js";
 import {
   generateCookies,
   refreshAccessToken,
@@ -264,5 +265,61 @@ export const GetRecentTransaction=async(req,res)=>{
   } catch (error) {
     console.error("Error fetching transactions:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+
+export const getFinancialSummary=async(req,res)=>{
+  try {
+    const userId = req.user._id;
+      // Fetch the user's budget data
+      let budgetData = await Budget.find({ user: userId });
+    if (!budgetData || budgetData.length === 0) {
+     budgetData=0
+    }
+
+
+    // Get the total income for the user
+    const totalIncomeResult = await Income.aggregate([
+      { $match: { user: userId } }, // Match the user's income
+      { $group: { _id: null, totalIncome: { $sum: "$amount" } } }
+    ]);
+
+    const totalIncome = totalIncomeResult.length > 0 ? totalIncomeResult[0].totalIncome : 0;
+
+    // Get the total expense for the user
+    const totalExpenseResult = await Expense.aggregate([
+      { $match: { user: userId } }, // Match the user's expense
+      { $group: { _id: null, totalExpense: { $sum: "$amount" } } }
+    ]);
+
+    const totalExpense = totalExpenseResult.length > 0 ? totalExpenseResult[0].totalExpense : 0;
+
+    // Calculate the remaining budget for each category
+    const budgetSummary = budgetData.map(budget => {
+      const budgetLimit = budget.limit;
+      const spentAmount = budget.spentAmount || 0;
+      const remainingBudget = budgetLimit - spentAmount;
+
+      return {
+        category: budget.category,
+        limit: budgetLimit,
+        spentAmount,
+        remainingBudget,
+        duration: budget.duration,
+      };
+    });
+
+    // Return the financial summary
+    return res.status(200).json({
+      totalIncome,
+      totalExpense,
+      remainingBudget: totalIncome - totalExpense, // Compare income and expenses for overall remaining budget
+      budgetSummary, // Summary of remaining budgets for each category
+    });
+
+  } catch (error) {
+    console.error("Error calculating financial summary:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 }

@@ -44,7 +44,10 @@ export const addExpense = async (req, res) => {
 // Get Expenses
 export const getExpenses = async (req, res) => {
   try {
-    const expenses = await Expense.find({ user: req.user.id }).sort({ date: -1 });
+    const userId=req.user.id;
+    console.log("ex",userId)
+    const expenses = await Expense.find({ userId });
+    console.log(expenses);
     res.status(200).json({ success: true, expenses });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

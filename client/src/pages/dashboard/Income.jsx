@@ -5,212 +5,182 @@ import CustomLineChart from "../../components/income/CustomLineChart";
 import IncomePieChartWithFilter from "../../components/income/PieChartWithFilter";
 import useIncomeStore from "../../store/UseIncomeStrore";
 import { useUserAuthStore } from "../../store/UserAuthStore";
+import { AXIOS_INSTANCE as axios } from "../../config/axios.config.js";
 
-const TotalIncomes = [
-  {
-    _id: "i1",
-    type: "income",
-    source: "Salary",
-    category: "Monthly Income",
-    icon: "💼",
-    amount: 3200.0,
-    month: "May",
-    year: 2025,
-  },
-  {
-    _id: "i2",
-    type: "income",
-    source: "Freelance Work",
-    category: "Side Hustle",
-    icon: "🧑‍💻",
-    amount: 800.0,
-    month: "May",
-    year: 2025,
-  },
-  {
-    _id: "i3",
-    type: "income",
-    source: "Birthday Gift",
-    category: "Gift Income",
-    icon: "🎁",
-    amount: 200.0,
-    month: "May",
-    year: 2025,
-  },
-  {
-    _id: "i4",
-    type: "income",
-    source: "Stock Dividends",
-    category: "Investment",
-    icon: "📈",
-    amount: 150.75,
-    month: "May",
-    year: 2025,
-  },
-  {
-    _id: "i5",
-    type: "income",
-    source: "Blog Earnings",
-    category: "Passive Income",
-    icon: "📝",
-    amount: 95.0,
-    month: "April",
-    year: 2025,
-  },
-  {
-    _id: "i6",
-    type: "income",
-    source: "Selling Items",
-    category: "One-Time Income",
-    icon: "📦",
-    amount: 180.0,
-    month: "March",
-    year: 2025,
-  },
-  {
-    _id: "i7",
-    type: "income",
-    source: "Tutoring",
-    category: "Side Hustle",
-    icon: "📚",
-    amount: 250.0,
-    month: "February",
-    year: 2025,
-  },
-  {
-    _id: "i8",
-    type: "income",
-    source: "Bonus",
-    category: "Work Bonus",
-    icon: "💰",
-    amount: 500.0,
-    month: "January",
-    year: 2025,
-  },
-];
 
-const monthlyIncomeData = [
-  {
-    month: "January",
-    incomes: [
-      { category: "Salary", amount: 3000 },
-      { category: "Freelance", amount: 700 },
-      { category: "Dividends", amount: 300 },
-    ],
-  },
-  {
-    month: "February",
-    incomes: [
-      { category: "Salary", amount: 3100 },
-      { category: "Tutoring", amount: 400 },
-    ],
-  },
-  {
-    month: "March",
-    incomes: [
-      { category: "Salary", amount: 3200 },
-      { category: "Freelance", amount: 500 },
-      { category: "Bonus", amount: 300 },
-    ],
-  },
-  {
-    month: "April",
-    incomes: [
-      { category: "Salary", amount: 3150 },
-      { category: "Freelance", amount: 550 },
-    ],
-  },
-  {
-    month: "May",
-    incomes: [
-      { category: "Salary", amount: 3100 },
-      { category: "Dividends", amount: 400 },
-    ],
-  },
-  {
-    month: "June",
-    incomes: [
-      { category: "Salary", amount: 3300 },
-      { category: "Freelance", amount: 800 },
-      { category: "Side Hustle", amount: 200 },
-    ],
-  },
-  {
-    month: "July",
-    incomes: [
-      { category: "Salary", amount: 3400 },
-      { category: "Freelance", amount: 650 },
-    ],
-  },
-  {
-    month: "August",
-    incomes: [
-      { category: "Salary", amount: 3450 },
-      { category: "Tutoring", amount: 300 },
-    ],
-  },
-  {
-    month: "September",
-    incomes: [
-      { category: "Salary", amount: 3500 },
-      { category: "Dividends", amount: 350 },
-    ],
-  },
-  {
-    month: "October",
-    incomes: [
-      { category: "Salary", amount: 3550 },
-      { category: "Freelance", amount: 600 },
-    ],
-  },
-  {
-    month: "November",
-    incomes: [
-      { category: "Salary", amount: 3600 },
-      { category: "Bonus", amount: 500 },
-    ],
-  },
-  {
-    month: "December",
-    incomes: [
-      { category: "Salary", amount: 3700 },
-      { category: "Freelance", amount: 750 },
-    ],
-  },
-];
 
 const Income = () => {
-  const [setopenModal, openModal] = useState(false);
-  const {user}=useUserAuthStore()
-  const {incomes,fetchIncomes,fetchMonthData,monthData}=useIncomeStore();
+  const [openModal, setOpenModal] = useState(false);
+  const { user } = useUserAuthStore();
+  const { incomes, fetchIncomes, fetchMonthData, monthData,incomeOverview } = useIncomeStore();
+
+  let UserId=null
+  if(user){
+     UserId=user._id
+  }
+  // Form state
+  const [formData, setFormData] = useState({
+    source: "",
+    amount: "",
+    note: "",
+    date: "",
+    mode: "",
+    category: "",
+    icon: "",
+  });
+
   useEffect(() => {
+    fetchIncomes();
+    fetchMonthData(UserId);
+  }, []);
 
-    fetchIncomes()
-    fetchMonthData(user._id)
+  console.log("income overview at income page",incomeOverview);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  }, 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { source, amount, date, mode, category } = formData;
 
-  
-  []);
-  
-  
+    if (!source || !amount || !date || !mode || !category) {
+      alert("Please fill all required fields.");
+      return;
+    }
+
+    try {
+      const res = await axios.post("/income/addIncome", {
+        ...formData,
+        icon: formData.icon || "💰",
+        hideDeleteBtn: false,
+        type: "income",
+      });
+
+      if (res.data.success) {
+        alert("Income added successfully!");
+        fetchIncomes(); // refresh incomes
+        fetchMonthData(UserId);
+        setOpenModal(false);
+        setFormData({
+          source: "",
+          amount: "",
+          note: "",
+          date: "",
+          mode: "",
+          category: "",
+          icon: "",
+        });
+      }
+    } catch (error) {
+      alert("Failed to add income: " + error.response?.data?.message || error.message);
+    }
+  };
+
   return (
     <Dashboardlayout activemenu={"Incomes"}>
       <div className="my-5 mx-auto">
-        {/* Add flex layout to place overviews side by side */}
-        <CustomLineChart />
+        <button
+          className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg float-right"
+          onClick={() => setOpenModal(true)}
+        >
+          Add Income
+        </button>
+
+        <CustomLineChart  />
         <div className="flex flex-col md:flex-row gap-4 mt-6">
           <div className="w-full md:w-1/2">
             <IncomeOverView
-              transactions={TotalIncomes}
-              onopenModel={() => setopenModal(true)}
+              transactions={incomes}
+              onopenModel={() => setOpenModal(true)}
             />
           </div>
           <div className="w-full md:w-1/2">
-            <IncomePieChartWithFilter data={monthlyIncomeData} />
+            <IncomePieChartWithFilter data={monthData} />
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      {openModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+            <h2 className="text-xl font-semibold mb-4">Add Income</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                name="source"
+                value={formData.source}
+                onChange={handleChange}
+                placeholder="Income Source"
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
+              <input
+                name="amount"
+                type="number"
+                value={formData.amount}
+                onChange={handleChange}
+                placeholder="Amount"
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
+              <input
+                name="note"
+                value={formData.note}
+                onChange={handleChange}
+                placeholder="Note (optional)"
+                className="w-full border px-3 py-2 rounded"
+              />
+              <input
+                name="date"
+                type="date"
+                value={formData.date}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
+              <input
+                name="mode"
+                value={formData.mode}
+                onChange={handleChange}
+                placeholder="Payment Mode (e.g., UPI, Cash)"
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
+              <input
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                placeholder="Category"
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
+              <input
+                name="icon"
+                value={formData.icon}
+                onChange={handleChange}
+                placeholder="Icon (optional, e.g., 💼)"
+                className="w-full border px-3 py-2 rounded"
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setOpenModal(false)}
+                  className="px-4 py-2 bg-gray-300 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+                >
+                  Add
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </Dashboardlayout>
   );
 };

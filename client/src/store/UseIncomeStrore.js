@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { AXIOS_INSTANCE as axios } from "../config/axios.config.js";
 
+
 export const useIncomeStore = create((set, get) => ({
   // State variables
   incomes: [],
@@ -23,6 +24,7 @@ export const useIncomeStore = create((set, get) => ({
     set({ isLoading: { ...get().isLoading, fetching: true }, error: null });
     try {
       const response = await axios.get(`/income/getIncome`);
+      console.log("income data all",response)
       set({ incomes: response.data.incomes, isLoading: { ...get().isLoading, fetching: false } });
       set({ totalIncome: response.data.incomes.reduce((total, income) => total + income.amount, 0) });
     } catch (error) {
@@ -35,7 +37,7 @@ export const useIncomeStore = create((set, get) => ({
     set({ isLoading: { ...get().isLoading, overview: true }, error: null });
     try {
       const response = await axios.get(`/api/incomes/overview/${userId}`);
-      set({ incomeOverview: response.data, isLoading: { ...get().isLoading, overview: false } });
+      set({ incomeOverview: response.data.result, isLoading: { ...get().isLoading, overview: false } });
     } catch (error) {
       set({ error: error.response?.data?.message || error.message, isLoading: { ...get().isLoading, overview: false } });
     }
@@ -46,7 +48,8 @@ export const useIncomeStore = create((set, get) => ({
     set({ isLoading: { ...get().isLoading, monthData: true }, error: null });
     try {
       const response = await axios.get(`/income/monthdata/${userId}`);
-      set({ monthData: response.data, isLoading: { ...get().isLoading, monthData: false } });
+      console.log("monthdata",response)
+      set({ monthData: response.data.result, isLoading: { ...get().isLoading, monthData: false } });
     } catch (error) {
       set({ error: error.response?.data?.message || error.message, isLoading: { ...get().isLoading, monthData: false } });
     }
@@ -57,7 +60,7 @@ export const useIncomeStore = create((set, get) => ({
     set({ isLoading: { ...get().isLoading, fetching: true }, error: null });
     try {
       const response = await axios.get(`/income/getLast30DaysIncome/${userId}`)
-      console.log("income data",response)
+     console.log("30days monthly data", response)
       set({ monthlyIncome: response.data.result, isLoading: { ...get().isLoading, fetching: false } });
     } catch (error) {
       set({ error: error.response?.data?.message || error.message, isLoading: { ...get().isLoading, fetching: false } });
@@ -83,7 +86,7 @@ export const useIncomeStore = create((set, get) => ({
   deleteIncome: async (incomeId, userId) => {
     set({ isLoading: { ...get().isLoading, deleting: true }, error: null });
     try {
-      await axios.delete(`/api/incomes/${userId}/${incomeId}`);
+      await axios.delete(`/auth/income/deleteIncome/${userId}`);
       set((state) => ({
         incomes: state.incomes.filter((income) => income._id !== incomeId),
         isLoading: { ...get().isLoading, deleting: false },

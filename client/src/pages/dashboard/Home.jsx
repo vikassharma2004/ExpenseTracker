@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect} from "react";
 import RecentTransactions from "../../components/Dashboard/RecentTransactions";
 import Dashboardlayout from "../../components/layouts/Dashboardlayout";
 import InfoCard from "../../components/layouts/InfoCard";
@@ -13,18 +13,7 @@ import { useUserAuthStore } from "../../store/UserAuthStore.js";
 
 
 
-const incomeData = [
-  { date: "2025-03-09", amount: 183, name: "Gift", mode: "Cash" },
-  { date: "2025-03-10", amount: 264, name: "Other", mode: "Cheque" },
-  { date: "2025-03-11", amount: 271, name: "Gift", mode: "Cheque" },
-  { date: "2025-03-12", amount: 262, name: "Freelancing", mode: "Cheque" },
-  { date: "2025-03-13", amount: 212, name: "Freelancing", mode: "UPI" },
-  { date: "2025-03-14", amount: 178, name: "Gift", mode: "Cash" },
-  { date: "2025-03-15", amount: 253, name: "Salary", mode: "Cheque" },
-  { date: "2025-03-16", amount: 120, name: "Salary", mode: "Bank Transfer" },
-  { date: "2025-03-17", amount: 185, name: "Gift", mode: "Cheque" },
-  { date: "2025-03-18", amount: 160, name: "Other", mode: "Cash" },
-];
+
 
 // const last30daysExpenses = [
 //   {
@@ -66,16 +55,19 @@ const incomeData = [
 
 const Home = ({ activemenu }) => {
   const navigate = useNavigate();
-  const {user}=useUserAuthStore()
+  const {user,getSummary}=useUserAuthStore()
   const {incomes, isLoading,getRecentTransactions, fetchMonthlyIncome , monthlyIncome}=useIncomeStore();
   
-
+let userId=null
+  if(user){
+     userId=user?._id
+  }
   useEffect(() => {
     getRecentTransactions()
-    fetchMonthlyIncome(user._id)
+    fetchMonthlyIncome(userId)
+    getSummary()
   }, []);
-console.log(incomes)
-console.log(monthlyIncome,"month")
+
   return (
     <Dashboardlayout activemenu={"Dashboard"}>
       <div className="my-5 mx-auto">
@@ -127,7 +119,7 @@ console.log(monthlyIncome,"month")
             onSeeMore={() => navigate("/Expenses")}
           />
           <Lat30daysExpenses data={monthlyIncome} />
-          <RecentIncomeWithChart data={incomeData} />
+          <RecentIncomeWithChart data={monthlyIncome} />
         </div>
       </div>
     </Dashboardlayout>

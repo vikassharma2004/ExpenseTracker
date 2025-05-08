@@ -13,6 +13,7 @@ const TransactionCard = ({
   type,
   hideDeleteBtn,
 }) => {
+
   const getAmountColor = (type) => {
     if (type === "expense") {
       return "text-red-500 bg-red-50 ";

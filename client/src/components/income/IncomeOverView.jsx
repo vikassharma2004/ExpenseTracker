@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-
 import CustomBarChart from "../Dashboard/CustomBarChart";
 import RecentTransactions from "../Dashboard/RecentTransactions";
 import TransactionCard from "../Dashboard/TransactionCard";
 
 const IncomeOverView = ({ transactions, onopenModel }) => {
   const [barChartData, setBarChartData] = useState([]);
-  console.log(transactions);
+  
+
   useEffect(() => {
     if (transactions && transactions.length > 0) {
       const prepareIncomeBarChartData = (transactions) => {
@@ -39,20 +39,25 @@ const IncomeOverView = ({ transactions, onopenModel }) => {
         </button>
       </div>
 
-       {/* Scrollable container for transaction cards */}
-  <div className="mt-4 max-h-[400px] overflow-y-auto pr-2">
-    {transactions?.map((item) => (
-      <TransactionCard
-        key={item._id}
-        title={item.type === "expense" ? item.category : item.source}
-        icon={item.icon}
-        date={item.date}
-        amount={item.amount}
-        type={item.type}
-        hideDeleteBtn={item.hideDeleteBtn}
-      />
-    ))}
-  </div>
+      <div className="mt-4 max-h-[400px] overflow-y-auto pr-2">
+        {transactions && transactions.length > 0 ? (
+          transactions.map((item) => (
+            <TransactionCard
+              key={item._id}
+              title={item.type === "expense" ? item.category : item.source}
+              icon={item.icon}
+              date={item.date}
+              amount={item.amount}
+              type={item.type}
+              hideDeleteBtn={item.hideDeleteBtn}
+            />
+          ))
+        ) : (
+          <div className="text-center text-sm text-gray-500 mt-4">
+            No data found
+          </div>
+        )}
+      </div>
     </div>
   );
 };

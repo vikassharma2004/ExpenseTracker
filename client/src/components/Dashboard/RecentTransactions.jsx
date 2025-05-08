@@ -2,7 +2,7 @@ import React from "react";
 import TransactionCard from "./TransactionCard";
 
 const RecentTransactions = ({ transactions, onSeeMore,title,text }) => {
-  console.log(transactions);
+  
   return (
     <div className="bg-white p-6  shadow-md shadow-gray-200 border border-gray-200/50 rounded-2xl mb-4">
     <div className="flex justify-between items-center  ">
@@ -15,6 +15,13 @@ const RecentTransactions = ({ transactions, onSeeMore,title,text }) => {
       </button>
 
     </div>
+
+    {transactions?.length === 0 && (
+  <div className="w-full text-center py-10 text-gray-500 text-sm">
+    No data found
+  </div>
+)}
+
       {transactions?.slice(0, 6)?.map((item) => (
         <TransactionCard
           key={item._id}

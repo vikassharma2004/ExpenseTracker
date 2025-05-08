@@ -1,6 +1,8 @@
-import React from 'react'
-import Dashboardlayout from '../../components/layouts/Dashboardlayout'
-import BudgetVsExpenseChart from '../../components/Expense/CustomComposedChart'
+import React, { useEffect } from "react";
+import Dashboardlayout from "../../components/layouts/Dashboardlayout";
+import BudgetVsExpenseChart from "../../components/Expense/CustomComposedChart";
+import TransactionCard from "../../components/Dashboard/TransactionCard";
+import useExpenseStore from "../../store/useExpenseStrore";
 
 const Expense = () => {
   const dummyData = [
@@ -101,23 +103,48 @@ const Expense = () => {
       ],
     },
   ];
+  const { expenses, fetchExpenses, loading } = useExpenseStore();
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
+
+  
+  console.log(expenses);
   return (
     <Dashboardlayout activemenu={"Expenses"}>
-
-<div className="my-5 mx-auto">
-       
+      <div className="my-5 mx-auto">
         <div className="flex flex-col md:flex-row gap-4 mt-6">
-
-        <div className="w-full md:w-1/2">
-            <BudgetVsExpenseChart
-              data={dummyData}
-              
-            />
+          <div className="w-full md:w-1/2">
+            <BudgetVsExpenseChart data={dummyData} />
+          </div>
+          <div className="w-full md:w-1/2">
+          {expenses.length === 0 && (
+            <div className="w-full text-center py-10 text-gray-500 text-sm">
+              No data found
+            </div>
+          )}
+          {loading? (
+            <div className="w-full text-center py-10 text-gray-500 text-sm">
+              Loading...
+            </div>
+          ):null}
+            {expenses?.map((transaction, index) => (
+              <TransactionCard
+                key={index} // Ensure to use a unique key for each item
+                title={transaction.category} // You can change this to any other title you want to show
+                icon={transaction.icon}
+                date={new Date(transaction.date).toLocaleDateString()} // Formats the date as needed
+                amount={transaction.amount}
+                type={transaction.type}
+                hideDeleteBtn={transaction.hideDeleteBtn}
+              />
+            ))}
+            
           </div>
         </div>
-        </div>
+      </div>
     </Dashboardlayout>
-  )
-}
+  );
+};
 
-export default Expense
+export default Expense;

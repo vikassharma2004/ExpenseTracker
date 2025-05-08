@@ -26,7 +26,11 @@ console.log(data)
 
 
 
-
+{data.length===0 && (
+  <div className="w-full text-center py-10 text-gray-500 text-sm">
+    No data found
+  </div>
+)}
 
       <CustomBarChart data={Chart}/>
     </div>
