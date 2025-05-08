@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dashboardlayout from "../../components/layouts/Dashboardlayout";
 import IncomeOverView from "../../components/income/IncomeOverView";
 import CustomLineChart from "../../components/income/CustomLineChart";
 import IncomePieChartWithFilter from "../../components/income/PieChartWithFilter";
+import useIncomeStore from "../../store/UseIncomeStrore";
+import { useUserAuthStore } from "../../store/UserAuthStore";
 
 const TotalIncomes = [
   {
@@ -179,6 +181,19 @@ const monthlyIncomeData = [
 
 const Income = () => {
   const [setopenModal, openModal] = useState(false);
+  const {user}=useUserAuthStore()
+  const {incomes,fetchIncomes,fetchMonthData,monthData}=useIncomeStore();
+  useEffect(() => {
+
+    fetchIncomes()
+    fetchMonthData(user._id)
+
+  }, 
+
+  
+  []);
+  
+  
   return (
     <Dashboardlayout activemenu={"Incomes"}>
       <div className="my-5 mx-auto">

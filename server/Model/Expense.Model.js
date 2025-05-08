@@ -1,45 +1,54 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const expenseSchema = new mongoose.Schema({
-    user: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User', 
-        required: [true, 'User reference is required'], 
-        index: true 
+const expenseSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "User reference is required"],
     },
-    title: { 
-        type: String, 
-        required: [true, 'Title is required'], 
-        trim: true, 
-        minlength: [3, 'Title must be at least 3 characters long'], 
-        maxlength: [100, 'Title cannot exceed 100 characters'] 
+    type: {
+      type: String,
+      default: "expense",
+      enum: ["expense"],
     },
-    amount: { 
-        type: Number, 
-        required: [true, 'Amount is required'], 
-        min: [0, 'Amount must be a positive number'] 
+    category: {
+      type: String,
+      required: [true, "Category is required"],
+      trim: true,
     },
-    category: { 
-        type: String, 
-        required: [true, 'Category is required'], 
-        enum: {
-            values: ['Food', 'Transport', 'Utilities', 'Entertainment', 'Health', 'Other'],
-            message: 'Category must be one of the predefined values'
-        } 
+    source: {
+      type: String,
+      required: [true, "Expense source is required"],
+      trim: true,
     },
-    date: { 
-        type: Date, 
-        default: Date.now 
+    icon: {
+      type: String,
+      default: "💸", // fallback icon
     },
-    note: { 
-        type: String, 
-        trim: true, 
-        maxlength: [500, 'Note cannot exceed 500 characters'] 
+    amount: {
+      type: Number,
+      required: [true, "Expense amount is required"],
+      min: [0, "Amount must be a positive number"],
     },
-}, {
-    timestamps: true // Automatically adds createdAt and updatedAt fields
-});
+    date: {
+      type: Date,
+      default: () => new Date(),
+      required: true,
+    },
+    note: {
+      type: String,
+      trim: true,
+      maxlength: [500, "Note cannot exceed 500 characters"],
+    },
+    hideDeleteBtn: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-expenseSchema.index({ user: 1, date: -1 }); // Compound index for efficient querying by user and date
-
-export const Expense = mongoose.model('Expense', expenseSchema);
+export const Expense = mongoose.model("Expense", expenseSchema);

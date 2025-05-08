@@ -21,7 +21,7 @@ const App = () => {
 
   setInterval(() => {
     refreshToken();
-  }, 5 * 60 * 1000);
+  }, 1 * 60 * 1000);
 
   if (ischeckingAuth) {
     return (

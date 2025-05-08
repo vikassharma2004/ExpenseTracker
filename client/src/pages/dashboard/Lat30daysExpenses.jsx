@@ -11,7 +11,7 @@ const PrepareExpenseBarChartData=(data)=>{
     return chartdata
 }
 const Lat30daysExpenses = ({data}) => {
-
+console.log(data)
     const [Chart, setChart] = useState([]);
 
     useEffect(() => {

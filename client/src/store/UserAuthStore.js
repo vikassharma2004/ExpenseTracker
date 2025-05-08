@@ -7,6 +7,9 @@ import { AXIOS_INSTANCE as axios } from "../config/axios.config.js";
 
 
 
+// setInterval(() => {
+//   refreshToken()
+// }, 3000);
 
 export const useUserAuthStore = create(
   persist(
@@ -14,6 +17,7 @@ export const useUserAuthStore = create(
       user: null,
       loading:false,
       ischeckingAuth:false,
+      isfetching:false,
       isAuthenticated: false,
       error: null,
 
@@ -24,7 +28,7 @@ export const useUserAuthStore = create(
           
         } catch (error) {
           console.log("Error while refreshing token", error);
-          toast.error("Failed to refresh token");
+          
         }
       },
 
@@ -107,6 +111,8 @@ export const useUserAuthStore = create(
           });
         }
       },
+   
+
 
       // Get Profile
       getProfile: async () => {
@@ -129,6 +135,7 @@ export const useUserAuthStore = create(
         }
       },
     }),
+    
     {
       name: "user-auth-storage",
       getStorage: () => localStorage,

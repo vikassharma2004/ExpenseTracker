@@ -1,5 +1,7 @@
 import { User } from "../Model/User.Model.js";
 import { resetPasswordTemplate } from "../utils/EmailTemplate/ResetPasswordTemplate.js";
+import { Income } from "../Model/Income.Model.js";
+import {Expense} from "../Model/Expense.Model.js"
 import {
   generateCookies,
   refreshAccessToken,
@@ -215,3 +217,52 @@ export const refreshToken = async (req, res) => {
     res.status(500).json({ success: false, message: "internal server error" });
   }
 };
+
+export const GetRecentTransaction=async(req,res)=>{
+  try {
+    const userId = req.user._id;
+
+    const incomeTransactions = await Income.aggregate([
+      { $match: { userId } },
+      {
+        $project: {
+          _id: { $toString: "$_id" }, // convert ObjectId to string
+          type: { $literal: "income" },
+          category: 1,
+          source: 1,
+          icon: 1,
+          date: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+          amount: 1,
+          hideDeleteBtn: 1
+        }
+      }
+    ]);
+
+    const expenseTransactions = await Expense.aggregate([
+      { $match: { userId } },
+      {
+        $project: {
+          _id: { $toString: "$_id" },
+          type: { $literal: "expense" },
+          category: 1,
+          source: 1,
+          icon: 1,
+          date: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+          amount: 1,
+          hideDeleteBtn: 1
+        }
+      }
+    ]);
+   
+
+    const allTransactions = [...incomeTransactions, ...expenseTransactions];
+
+    // Sort by date descending
+    allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    res.status(200).json(allTransactions);
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
